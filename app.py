@@ -169,7 +169,6 @@ class Experiment:
     @st.cache(suppress_st_warning=True,
               hash_funcs={RegressionInput: reg_input_hash, RegressionOutput: reg_output_hash})
     def _regression(self, reg_input):
-        st.info("Computing Regression")
         df = reg_input.df
         reg_x_vars = reg_input.x_vars
         reg_y = reg_input.y_var
