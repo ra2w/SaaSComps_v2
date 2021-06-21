@@ -304,77 +304,7 @@ def workbench(show_detail):
     return
 
 
-def summary(show_detail):
-    st.header("TL;DR")
-
-    #    st.markdown("""
-    #
-    #    **For high-growth B2B SaaS businesses**:
-    #    * [Revenue growth drives higher revenue multiples](#regression1a)
-    #
-    #    * [Gross Margins don't impact valuation](#regression1a)
-    #
-    #    * [Free Cash Flows don't impact valuation either](#regression1b)
-    #
-    #    """, unsafe_allow_html=True)
-    #
-    #    st.markdown(""" **Excluding High-growth SaaS businesses the relationship becomes less clear**
-    #    * [Valuation is driven by BOTH growth and cash flow profitability] (#regression3)
-    #        * Gross Margins don't drive Revenue multiples (high p-value)
-    #        * Revenue growth by itself doesn't adequately explain revenue multiples either (poor R^2)
-    #        * Adding Free-cash-flow improves model fit
-    #    """, unsafe_allow_html=True)
-
-    st.header("Revenue Multiples for High-growth SaaS", anchor='regression1a')
-    with st.beta_expander('Revenue Multiples for High-growth SaaS'):
-        e = Experiment() \
-            .set_fwd_timeline('2021') \
-            .filter('High growth only')
-        e.regression(reg_x_vars=[e.rev_g, e.gm], reg_y_var=e.rev_mult).print(show_detail)
-
-    st.header("Revenue Multiples for High-growth SaaS", anchor='regression1b')
-
-    with st.beta_expander('Revenue Multiples for High-growth SaaS'):
-        e = Experiment() \
-            .set_fwd_timeline('2021') \
-            .filter('High growth only')
-        e.regression(reg_x_vars=[e.rev_g, 'LTM FCF %'], reg_y_var=e.rev_mult).print(show_detail)
-
-    st.header("Revenue Multiples for SaaS (ex High growth)", anchor='regression2')
-    with st.beta_expander('Revenue Multiples for SaaS (ex High growth)'):
-        e = Experiment() \
-            .set_fwd_timeline('2021') \
-            .filter('All (excl. high growth)')
-        e.regression(reg_x_vars=[e.rev_g, e.gm], reg_y_var=e.rev_mult).print(show_detail)
-
-    st.header("Revenue Multiples for SaaS (ex High growth)", anchor='regression3')
-
-    with st.beta_expander('Revenue Multiples for SaaS (ex High growth)'):
-        e = Experiment() \
-            .set_fwd_timeline('2021') \
-            .filter('All (excl. high growth)')
-        e.regression(reg_x_vars=[e.rev_g, 'LTM FCF %'], reg_y_var=e.rev_mult).print(show_detail)
-    return
-
-def summary2(e1,e2,e3,e4):
-    #    st.markdown("""
-    #
-    #    **For high-growth B2B SaaS businesses**:
-    #    * [Revenue growth drives higher revenue multiples](#regression1a)
-    #
-    #    * [Gross Margins don't impact valuation](#regression1a)
-    #
-    #    * [Free Cash Flows don't impact valuation either](#regression1b)
-    #
-    #    """, unsafe_allow_html=True)
-    #
-    #    st.markdown(""" **Excluding High-growth SaaS businesses the relationship becomes less clear**
-    #    * [Valuation is driven by BOTH growth and cash flow profitability] (#regression3)
-    #        * Gross Margins don't drive Revenue multiples (high p-value)
-    #        * Revenue growth by itself doesn't adequately explain revenue multiples either (poor R^2)
-    #        * Adding Free-cash-flow improves model fit
-    #    """, unsafe_allow_html=True)
-
+def summary(e1, e2, e3, e4):
     st.markdown("""
     For high growth B2B SaaS, ***revenue growth*** (*not profitability*) ***drives valuation***
     * *Valuation multiples* are well explained by *revenue growth* 
@@ -420,8 +350,9 @@ def summary2(e1,e2,e3,e4):
         e4.print(True)
     return
 
+
 def main():
-    st.set_page_config(initial_sidebar_state="collapsed")
+    #st.set_page_config(initial_sidebar_state="collapsed")
     sel = st.sidebar.radio("Menu", ['Summary', 'Workbench'])
     st.title('Impact of Growth and Margins on Valuation')
     show_detail = True
@@ -452,11 +383,10 @@ def main():
         .filter('All (excl. high growth)')
     e4.regression(reg_x_vars=[e4.rev_g, 'LTM FCF %'], reg_y_var=e4.rev_mult)
 
-
     if sel == 'Workbench':
         return workbench(True)
     else:
-        return summary2(e1,e2,e3,e4)
+        return summary(e1, e2, e3, e4)
 
 
 if __name__ == "__main__":
