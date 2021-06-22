@@ -272,24 +272,22 @@ def workbench(show_detail):
     e = Experiment().set_fwd_timeline(fwd_time).filter(slice_by_growth)
 
     st.sidebar.write("**Regression:**")
-    st.header("Regression")
     y_sel = st.sidebar.radio("Target metric", e.get_y_metric_list())
     st.sidebar.text("Select independent variable(s)")
 
-    plot_container = st.beta_container()
-
+    st.header("Regression")
     # Check if user selected revenue growth and/or gross margin
     reg_x_cols = [i for i in [e.rev_g, e.gm] if st.sidebar.checkbox(i, value={e.rev_g: True, e.gm: True}, key=i)]
     remaining_cols = list(set(e.get_x_metric_list()) - {e.rev_g, e.gm})
     reg_x_cols += st.sidebar.multiselect("Additional independent variables:", remaining_cols)
     e.regression(reg_x_vars=reg_x_cols, reg_y_var=y_sel).print(show_detail)
 
-    with plot_container:
-        ## Plots
-        st.header("Plots")
-        for _, x in zip(range(4), e.reg_input.x_vars):
-            st.plotly_chart(get_scatter_fig(e.to_frame(), x=x, y=e.reg_input.y_var))
-        st.plotly_chart(get_scatter_fig(e.to_frame(), x=e.gm, y=e.reg_input.y_var))
+
+    ## Plots
+    #st.header("Plots")
+    #for _, x in zip(range(4), e.reg_input.x_vars):
+    #    st.plotly_chart(get_scatter_fig(e.to_frame(), x=x, y=e.reg_input.y_var))
+    #st.plotly_chart(get_scatter_fig(e.to_frame(), x=e.gm, y=e.reg_input.y_var))
 
     st.subheader("Dataset")
     st.beta_expander('Table Output') \
@@ -304,6 +302,7 @@ def workbench(show_detail):
 
 
 def summary(e1, e2, e3, e4):
+    st.header("High Growth B2B SaaS")
     st.markdown("""
     For high growth B2B SaaS, ***revenue growth*** (*not profitability*) ***drives valuation***
     * *Valuation multiples* are well explained by *revenue growth* 
@@ -326,8 +325,9 @@ def summary(e1, e2, e3, e4):
         e2.print(True)
 
     st.markdown('***')
-
+    st.header("B2B SaaS (excluding high growth)")
     st.markdown("""
+        
         For the rest of B2B SaaS (i.e non high growth SaaS), the picture is less clear
         * *Revenue growth* by itself doesn't adequately explain *valuation multiples* 
             * Model fit is poor (low R^2)
@@ -339,8 +339,7 @@ def summary(e1, e2, e3, e4):
         e3.print(True)
     st.markdown("""
             * Looking at Free Cash Flow % instead of Gross Margin improves model fit
-                * Model fit is fair
-            * *FCF Margin* have a **small effect** on *valuation multiples*
+            * FCF Margin* has a **small positive effect** on *valuation multiples*
                 * Low p-value but small Beta.
             * But overall *revenue growth* still has a much **larger effect** on valuation multiples than profitability
                 * Low p-value and higher Beta relative to FCF %
