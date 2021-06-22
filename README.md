@@ -24,7 +24,7 @@ For the rest of B2B SaaS (i.e non high growth SaaS), the picture is less clear
 
 ## Info:
 
-Dataset: 30 High growth B2B SaaS companies
+Dataset: 106 B2B SaaS companies
 
 Author: Ramu Arunachalam (ramu@acapital.com)
 
