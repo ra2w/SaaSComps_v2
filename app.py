@@ -43,8 +43,8 @@ latex_dict = {'EV / NTM Revenue': r'''\frac{EV}{Rev_{NTM}}''',
               'EV / 2021 Gross Profit': r'''\frac{EV}{GP_{2021}}''',
               'NTM Revenue Growth': r'''Rev\,Growth_{NTM}''',
               '2021 Revenue Growth': r'''Rev\,Growth_{2021}''',
-              'Growth adjusted EV / NTM Revenue': r'''\frac{EV}{Rev_{NTM}}\cdot\frac{1}{Growth_{NTM}}''',
-              'Growth adjusted EV / 2021 Revenue': r'''\frac{EV}{Rev_{2021}}\cdot\frac{1}{Growth_{2021}}'''
+              'Growth adjusted EV / LTM Revenue': r'''\frac{EV}{Rev_{LTM}}\cdot\frac{1}{Growth_{NTM}}''',
+              'Growth adjusted EV / 2020 Revenue': r'''\frac{EV}{Rev_{2020}}\cdot\frac{1}{Growth_{2021}}'''
               }
 
 
@@ -151,10 +151,14 @@ class Experiment:
     def set_fwd_timeline(self, type):
         self.rev_g = f'{type} Revenue Growth'
         self.rev_mult = f'EV / {type} Revenue'
-        self.growth_adj_mult = f'Growth adjusted {type}'
         self.gp_mult = f'EV / {type} Gross Profit'
         self.gm = f'Gross Margin'
-        self.df[self.growth_adj_mult] = self.df[self.rev_mult] / self.df[self.rev_g]
+
+        # To avoid double counting growth, for growth-adjusted multiples
+        # we take the forward growth rate with the current revenue multiple
+        rev_mult = 'LTM' if type == 'NTM' else '2020'
+        self.growth_adj_mult = f'Growth adjusted EV / {rev_mult} Revenue'
+        self.df[self.growth_adj_mult] = self.df[f'EV / {rev_mult} Revenue'] / self.df[self.rev_g]
         return self
 
     def get_y_metric_list(self):
@@ -234,8 +238,10 @@ class Experiment:
             st.write(f"2. Model fit is **poor** (R ^ 2 = {self.reg_output.model.rsquared * 100: .2f}%)")
 
         # Check for Multicolinearity
-        if self.reg_output.vif_data is not None and len(
-                self.reg_output.vif_data[self.reg_output.vif_data['VIF'] > 10]) > 0:
+        if (
+                self.reg_output.vif_data is not None
+                and len(self.reg_output.vif_data[self.reg_output.vif_data['VIF'] > 10]) > 0
+        ):
             st.write("4. **Potential multicolinearity**")
         else:
             st.write("4. **NO multicolinearity**")
@@ -259,8 +265,9 @@ class Experiment:
             st.markdown('***')
             st.write(self.reg_output.model.summary())
             st.markdown('***')
-            st.write("Variance Inflation Factors")
-            st.table(self.reg_output.vif_data.set_index('feature'))
+            if self.reg_output.vif_data is not None:
+                st.write("Variance Inflation Factors")
+                st.table(self.reg_output.vif_data.set_index('feature'))
 
         return self
 
