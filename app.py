@@ -162,7 +162,7 @@ class Experiment:
         return self
 
     def get_y_metric_list(self):
-        return [self.rev_mult, self.gp_mult, self.growth_adj_mult]
+        return [self.rev_mult, self.gp_mult, self.growth_adj_mult, self.rev_g]
 
     def get_x_metric_list(self):
         return self.df.select_dtypes(['float', 'int']).columns
@@ -297,11 +297,11 @@ def workbench(show_detail):
     #st.plotly_chart(get_scatter_fig(e.to_frame(), x=e.gm, y=e.reg_input.y_var))
 
     st.subheader("Dataset")
-    st.beta_expander('Table Output') \
+    st.expander('Table Output') \
         .table(e.to_frame()[['Name'] + [y_sel] + reg_x_cols]
                .set_index('Name')
                .sort_values(y_sel, ascending=False))
-    st.beta_expander('Full Raw Table Output').table(e.df_main)
+    st.expander('Full Raw Table Output').table(e.df_main)
     st.sidebar.info(f"""*{len(e.df)} companies selected*    
         *Prices as of {file_date}*""")
 
@@ -318,7 +318,7 @@ def summary(e1, e2, e3, e4):
     * *Gross Margin* does not influence *valuation multiples*
         * Poor relationship between Revenue multiples and Gross margin (high p-value)
     """)
-    with st.beta_expander("More info"):
+    with st.expander("More info"):
         e1.print(True)
 
     st.markdown("""
@@ -328,7 +328,7 @@ def summary(e1, e2, e3, e4):
         * *FCF Margin* does not influence *valuation multiples*
             * Poor relationship between Revenue multiples and FCF margin (high p-value)
         """)
-    with st.beta_expander("More info"):
+    with st.expander("More info"):
         e2.print(True)
 
     st.markdown('***')
@@ -342,7 +342,7 @@ def summary(e1, e2, e3, e4):
         * *Gross Margin* does not influence *valuation multiples*
             * Poor relationship between Revenue multiples and Gross margin (high p-value)
         """)
-    with st.beta_expander("More info"):
+    with st.expander("More info"):
         e3.print(True)
     st.markdown("""
             * Looking at Free Cash Flow % instead of Gross Margin improves model fit
@@ -351,7 +351,7 @@ def summary(e1, e2, e3, e4):
             * But overall *revenue growth* still has a much **larger effect** on valuation multiples than profitability
                 * Low p-value and higher Beta relative to FCF %
             """)
-    with st.beta_expander("More info"):
+    with st.expander("More info"):
         e4.print(True)
     return
 
